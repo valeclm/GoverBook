@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     String tab1text ="";
     String tab2text ="";
     String tab1textPrevious = "";
-    String tab2textPrevious = "";
+    String tab2textPrevious = "a";
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -100,51 +100,57 @@ public class MainActivity extends AppCompatActivity {
         initClearButton();
         initSpinner();
 
-        etSearch.addTextChangedListener(new TextWatcher() {
 
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                if (!etSearch.getText().toString().equals("")) { //if edittext include text
-                    btnClear.setVisibility(View.VISIBLE);
-                } else { //not include text
-                    btnClear.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                if (s.length() > 2) {
-                    if (viewPager.getCurrentItem() == 0 && !tab1textPrevious.equals(tab1text))
-                    {
-                        startSearchFio();
-                        tab1textPrevious = tab1text;
-                    }
-                    if (viewPager.getCurrentItem() == 1 && !tab2textPrevious.equals(tab2text)) {
-                        startSearchOrg();
-                        tab2textPrevious = tab2text;
-                    }
-
-                }
-                if (viewPager.getCurrentItem() == 0) tab1text = etSearch.getText().toString();
-                if (viewPager.getCurrentItem() == 1) tab2text = etSearch.getText().toString();
-
-                if (tab1text.equals("") && viewPager.getCurrentItem() == 0) tabActions();
-                if (tab2text.equals("") && viewPager.getCurrentItem() == 1) tabActions();
-            }
-        });
-
+        textChangedListener(etSearch);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
+    }
+
+    private void textChangedListener(EditText editText)
+    {
+        editText.addTextChangedListener(new TextWatcher() {
+
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        if (!etSearch.getText().toString().equals("")) { //if edittext include text
+            btnClear.setVisibility(View.VISIBLE);
+        } else { //not include text
+            btnClear.setVisibility(View.GONE);
+        }
+    }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+            if (viewPager.getCurrentItem() == 0) tab1text = etSearch.getText().toString();
+            if (viewPager.getCurrentItem() == 1) tab2text = etSearch.getText().toString();
+
+            if (s.length() > 2) {
+            if (viewPager.getCurrentItem() == 0 && !tab1textPrevious.equals(tab1text))
+            {
+                startSearchFio();
+                tab1textPrevious = tab1text;
+            }
+            if (viewPager.getCurrentItem() == 1 && !tab2textPrevious.equals(tab2text)) {
+                startSearchOrg();
+                tab2textPrevious = tab2text;
+                Log.i("test", "tab2textPrevous = " + tab2textPrevious + "tab2text = " + tab2text);
+            }
+
+        }
+            if (tab1text.equals("") && viewPager.getCurrentItem() == 0 && !tab1textPrevious.equals(tab1text)) tabActions();
+            if (tab2text.equals("") && viewPager.getCurrentItem() == 1 && !tab2textPrevious.equals(tab2text)) tabActions();
+    }
+    });
     }
 
     private void initClearButton() {
@@ -193,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 if (viewPager.getCurrentItem() == 1) {
                     if (areaIds[selectedArea].equals(getString(R.string.default_city_id))) {
                         ListOrgMain(database);
+                        Log.i("test", "Внутри слушателя спиннера");
                     } else
                         displayOrgOnArea();
                 }
@@ -288,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideSoftKeyboard(MainActivity.this);
                 setupMenu();
 
             }
@@ -343,6 +351,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
 
+
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -350,16 +359,16 @@ public class MainActivity extends AppCompatActivity {
                     case 0:
                         viewPager.setCurrentItem(0);
                         etSearch.setText(tab1text);
-                        tabActions();
+                        //tabActions();
                         etSearch.setSelection(etSearch.getText().length());
                         break;
                     case 1:
                         viewPager.setCurrentItem(1);
                         etSearch.setText(tab2text);
                         if (areaIds[selectedArea].equals(getString(R.string.default_city_id))) {
-                            tabActions();
+                            //tabActions();
                         } else {
-                            tabActions();
+                            //tabActions();
                             displayOrgOnArea();
                         }
                         etSearch.setSelection(etSearch.getText().length());
